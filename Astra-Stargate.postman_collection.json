@@ -1,0 +1,1246 @@
+{
+	"info": {
+		"_postman_id": "4bbf6329-ee42-4758-af3c-f070236147b4",
+		"name": "Stargate Access",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authenticate",
+			"item": [
+				{
+					"name": "Get an Auth Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseBody = JSON.parse(responseBody);",
+									"pm.environment.set(\"token\", responseBody.authToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{authPostfix}}/v1/auth",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{authPostfix}}"
+							],
+							"path": [
+								"v1",
+								"auth"
+							]
+						},
+						"description": "Get an authentication Token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "REST API",
+			"item": [
+				{
+					"name": "Create a Keyspace (not for Astra, defined through portal)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"name\": \"{{keyspace}}\", \"replicas\": 3}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/schemas/keyspaces/",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"schemas",
+								"keyspaces",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Table",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"table\", \"cyclist_semi_pro\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"columnDefinitions\": [\n        {\n            \"name\": \"id\",\n            \"typeDefinition\": \"int\"\n        },\n        {\n            \"name\": \"firstname\",\n            \"typeDefinition\": \"text\"\n        },\n        {\n            \"name\": \"lastname\",\n            \"typeDefinition\": \"text\"\n        },\n        {\n            \"name\": \"age\",\n            \"typeDefinition\": \"int\"\n        },\n        {\n            \"name\": \"affiliation\",\n            \"typeDefinition\": \"map <text,text>\"\n        },\n        {\n            \"name\": \"country\",\n            \"typeDefinition\": \"text\"\n        },\n        {\n            \"name\": \"registration\",\n            \"typeDefinition\": \"date\"\n        }\n    ],\n    \"primaryKey\": {\"partitionKey\": [\"id\"]},\n    \"tableOptions\": {\"defaultTimeToLive\": 0},\n    \"name\": \"{{table}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v1/keyspaces/{{keyspace}}/tables",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v1",
+								"keyspaces",
+								"{{keyspace}}",
+								"tables"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert data into table",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"columns\": [\n        {\n            \"name\": \"id\",\n            \"value\": \"3\"\n        },\n        {\n            \"name\": \"firstname\",\n            \"value\": \"Joe\"\n        },\n        {\n            \"name\": \"lastname\",\n            \"value\": \"Harwell\"\n        },\n        {\n            \"name\": \"age\",\n            \"value\": \"31\"\n        },\n        {\n            \"name\": \"affiliation\",\n            \"value\": \"{name: 'Rotar Club', city: Dallas, members: 5100, fee: 499}\"\n        },\n        {\n            \"name\": \"country\",\n            \"value\": \"FRA\"\n        },\n        {\n            \"value\": \"2020-07-22\",\n            \"name\": \"registration\"\n        }\n    ]}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v1/keyspaces/{{keyspace}}/tables/{{table}}/rows/",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v1",
+								"keyspaces",
+								"{{keyspace}}",
+								"tables",
+								"{{table}}",
+								"rows",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve all Rows",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "X-Cassandra-Token",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v1/keyspaces/{{keyspace}}/tables/{{table}}/rows",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v1",
+								"keyspaces",
+								"{{keyspace}}",
+								"tables",
+								"{{table}}",
+								"rows"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve a Row",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "X-Cassandra-Token",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v1/keyspaces/{{keyspace}}/tables/{{table}}/rows/3",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v1",
+								"keyspaces",
+								"{{keyspace}}",
+								"tables",
+								"{{table}}",
+								"rows",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Queries",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"columnNames\": [\"id\", \"firstname\", \"lastname\",\"age\"],\n    \"filters\": [\n        {\n            \"value\": [\"3\"],\n            \"columnName\": \"id\",\n            \"operator\": \"eq\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v1/keyspaces/{{keyspace}}/tables/{{table}}/rows/query",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v1",
+								"keyspaces",
+								"{{keyspace}}",
+								"tables",
+								"{{table}}",
+								"rows",
+								"query"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rows",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"changeset\": [\n        {\n            \"column\": \"firstname\",\n            \"value\": \"David\"\n        },\n        {\n            \"column\": \"lastname\",\n            \"value\": \"Joy\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v1/keyspaces/{{keyspace}}/tables/{{table}}/rows/3",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v1",
+								"keyspaces",
+								"{{keyspace}}",
+								"tables",
+								"{{table}}",
+								"rows",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rows",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v1/keyspaces/{{keyspace}}/tables/{{table}}/rows/3",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}v1"
+							],
+							"path": [
+								"keyspaces",
+								"{{keyspace}}",
+								"tables",
+								"{{table}}",
+								"rows",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Document API",
+			"item": [
+				{
+					"name": "Create a Namespace (not for Astra, defined through portal as keyspace)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"name\": \"{{namespace}}\", \"replicas\": 3 }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/schemas/namespaces",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"schemas",
+								"namespaces"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a Game Document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseBody = JSON.parse(responseBody);",
+									"pm.environment.set(\"documentId\", responseBody.documentId);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"collection\", \"games\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gameCode\": \"HOCKEY\",\n    \"currentState\": {\n        \"name\": \"ADD_PLAYERS\",\n        \"roundId\": null\n    },\n    \"players\": {\"1\": {\n            \"name\": \"CRW- new\",\n            \"score\": 100\n    }},\n    \"audienceSize\": 50,\n    \"rounds\": {\n        \"1\": {\n            \"type\": \"QUESTION\",\n            \"title\": \"Round 1\",\n            \"scoreMultiplier\": 1\n        },\n        \"2\": {\n            \"type\": \"QUESTION\",\n            \"title\": \"Round 1\",\n            \"scoreMultiplier\": 2\n        },\n        \"3\": {\n            \"type\": \"COMIC\",\n            \"title\": \"Final Round\",\n            \"scoreMultiplier\": 3\n        }\n    },\n    \"questions\": {\n        \"6\": {\n            \"roundId\": 1,\n            \"content\": \"Custom Question\"\n        },\n        \"2\": {\n            \"roundId\": 2,\n            \"content\": \"What day is it?\"\n        },\n        \"3\": {\n            \"roundId\": 3,\n            \"content\": \"https://xkcd.com/386/\"\n        }\n    },\n    \"answers\": {},\n    \"votes\": {},\n    \"audienceVotes\": {},\n    \"start-time-new\" : 1607471624,\n    \"status\" : \"complete\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/{{namespace}}/collections/{{collection}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"{{namespace}}",
+								"collections",
+								"{{collection}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a Game Document with specific key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseBody = JSON.parse(responseBody);",
+									"pm.environment.set(\"documentId\", responseBody.documentId);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"collection\", \"games\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"gameCode\": \"HOCKEY\",\n    \"currentState\": {\n        \"name\": \"ADD_PLAYERS\",\n        \"roundId\": null\n    },\n    \"players\": {\"1\": {\n            \"name\": \"CRW- new\",\n            \"score\": 100\n    }},\n    \"audienceSize\": 50,\n    \"rounds\": {\n        \"1\": {\n            \"type\": \"QUESTION\",\n            \"title\": \"Round 1\",\n            \"scoreMultiplier\": 1\n        },\n        \"2\": {\n            \"type\": \"QUESTION\",\n            \"title\": \"Round 1\",\n            \"scoreMultiplier\": 2\n        },\n        \"3\": {\n            \"type\": \"COMIC\",\n            \"title\": \"Final Round\",\n            \"scoreMultiplier\": 3\n        }\n    },\n    \"questions\": {\n        \"6\": {\n            \"roundId\": 1,\n            \"content\": \"Custom Question\"\n        },\n        \"2\": {\n            \"roundId\": 2,\n            \"content\": \"What day is it?\"\n        },\n        \"3\": {\n            \"roundId\": 3,\n            \"content\": \"https://xkcd.com/386/\"\n        }\n    },\n    \"answers\": {},\n    \"votes\": {},\n    \"audienceVotes\": {},\n    \"start-time-new\" : 1607471624,\n    \"status\" : \"complete\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/gameapp/collections/{{collection}}/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"gameapp",
+								"collections",
+								"{{collection}}",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch a Specific Document of known id",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/{{namespace}}/collections/{{collection}}/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"{{namespace}}",
+								"collections",
+								"{{collection}}",
+								"100"
+							]
+						},
+						"description": "Update the ID env variable to fetch a document with a specific Docuemnt ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch All Documents in a Collection",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {},
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/{{namespace}}/collections/{{collection}}/?page-size=5",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"{{namespace}}",
+								"collections",
+								"{{collection}}",
+								""
+							],
+							"query": [
+								{
+									"key": "page-size",
+									"value": "5"
+								},
+								{
+									"key": "page-state",
+									"value": "AzEwMBP%2FVVVVVVVVVVQFdm90ZXPhVVVV8H%2F%2F%2F9Dwf%2F%2F%2F6A%3D%3D",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch data from Documents in a Collection",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/{{namespace}}/collections/{{collection}}/?page-size=5&fields=[\"documentId\",\"gameCode\",\"audienceSize\",\"currentState/name\"]",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"{{namespace}}",
+								"collections",
+								"{{collection}}",
+								""
+							],
+							"query": [
+								{
+									"key": "page-size",
+									"value": "5"
+								},
+								{
+									"key": "page-state",
+									"value": "AzEwMBP%2FVVVVVVVVVVQFdm90ZXPhVVVV8H%2F%2F%2F9Dwf%2F%2F%2F6A%3D%3D",
+									"disabled": true
+								},
+								{
+									"key": "fields",
+									"value": "[\"documentId\",\"gameCode\",\"audienceSize\",\"currentState/name\"]"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch a sub-document within a Specific Document of known id",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/{{namespace}}/collections/{{collection}}/100/votes",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"{{namespace}}",
+								"collections",
+								"{{collection}}",
+								"100",
+								"votes"
+							]
+						},
+						"description": "Update the ID env variable to fetch a document with a specific Docuemnt ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update the Votes Subdocument",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"1\": {\n        \"playerId\": \"CRW\"\n    },\n    \"2\": {\n        \"playerId\": \"DKG\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/{{namespace}}/collections/{{collection}}/100/votes",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"{{namespace}}",
+								"collections",
+								"{{collection}}",
+								"100",
+								"votes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search across the entire Collection",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"type": "text",
+								"value": "{{token}}"
+							},
+							{
+								"key": "where",
+								"value": "",
+								"type": "text"
+							},
+							{
+								"key": "page-size",
+								"value": "10",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/{{namespace}}/collections/{{collection}}/?page-size=2&fields=[\"gameCode\",\"status\",\"questions\"]&where={\"gameCode\" : { \"$eq\" : \"HOCKEY\" }}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"{{namespace}}",
+								"collections",
+								"{{collection}}",
+								""
+							],
+							"query": [
+								{
+									"key": "page-size",
+									"value": "2"
+								},
+								{
+									"key": "fields",
+									"value": "[\"gameCode\",\"status\",\"questions\"]"
+								},
+								{
+									"key": "where",
+									"value": "{ \"questions.*.roundId\" : { \"$gt\" : 5} }",
+									"disabled": true
+								},
+								{
+									"key": "where",
+									"value": "{ \"audienceSize\" : { \"$gt\" : 50 } }",
+									"disabled": true
+								},
+								{
+									"key": "where",
+									"value": "{ \"start-time-new\" : { \"$nptexists\" : true} }",
+									"disabled": true
+								},
+								{
+									"key": "page-state",
+									"value": "AzEwMBP%2FVVVVVVVVVVQFdm90ZXPhVVVV8H%2F%2F%2F9Dwf%2F%2F%2F6A%3D%3D",
+									"disabled": true
+								},
+								{
+									"key": "where",
+									"value": "{\"gameCode\" : { \"$eq\" : \"HOCKEY\" }}"
+								}
+							]
+						},
+						"description": "Update the ID env variable to fetch a document with a specific Docuemnt ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Game Document",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Cassandra-Token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{restPostfix}}/v2/namespaces/{{namespace}}/collections/{{collection}}/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{restPostfix}}"
+							],
+							"path": [
+								"v2",
+								"namespaces",
+								"{{namespace}}",
+								"collections",
+								"{{collection}}",
+								"100"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GraphQL API",
+			"item": [
+				{
+					"name": "Retrieve Schema information",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-cassandra-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetTables {\n  keyspace(name: \"{{keyspace}}\") {\n      name\n      tables {\n          name\n          columns {\n              name\n              kind\n              type {\n                  basic\n                  info {\n                      name\n                  }\n              }\n          }\n      }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{graphqlPostfix}}/graphql-schema",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{graphqlPostfix}}"
+							],
+							"path": [
+								"graphql-schema"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Data using GQL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-cassandra-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\n  {{table}}(value: { id: 3 }) {\n    values {\n      id\n      firstname\n      lastname\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{graphqlPostfix}}/graphql/participants",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{graphqlPostfix}}"
+							],
+							"path": [
+								"graphql",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Data using GQL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-cassandra-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {{table}} {\n  i1: insertcyclist_semi_pro(value: {id:1,firstname:\"JJ\",lastname:\"JACK\",age:31,country:\"FRA\",registration:\"2020-07-22\"}) {\n    value {\n      id\n      firstname\n      lastname\n      age\n      country\n      registration\n    }\n  }\n  i2: insertcyclist_semi_pro(value: {id:4,firstname:\"Joe\",lastname:\"Harwell\",age:31,country:\"FRA\",registration:\"2020-07-22\"}) {\n    value {\n      id\n      firstname\n      lastname\n      age\n      country\n      registration\n    }\n  }\n}\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{graphqlPostfix}}/graphql/participants",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{graphqlPostfix}}"
+							],
+							"path": [
+								"graphql",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Data using GQL wt Pagination",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-cassandra-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\n  {{table}}(options:{pageSize: 1, pageState: \"BAAAAAEA8H////4A\" }) {\n    values {\n      id\n      firstname\n      lastname\n      age\n      country\n    }\n    pageState\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{graphqlPostfix}}/graphql/participants",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{graphqlPostfix}}"
+							],
+							"path": [
+								"graphql",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve using Aliases",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-cassandra-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  ESM : {{table}}(value: { id: 1 }) {\n      values {\n      firstname}\n  }\n  DA: {{table}}(value: { id: 3 }) {\n      values {\n      firstname}\n  }\n}\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{graphqlPostfix}}/graphql/participants",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{graphqlPostfix}}"
+							],
+							"path": [
+								"graphql",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve using Fragments (WIP - Don't use)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-cassandra-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n  leftComparison: cyclist_semi_pro(value: { id: 1 }) {\n    ...nameparts\n  }\n}\n\nfragment nameparts on null {\n  firstname\n  lastname\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{graphqlPostfix}}/graphql/participants",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{graphqlPostfix}}"
+							],
+							"path": [
+								"graphql",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update row using GQL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-cassandra-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {{table}} {\n  update: updatecyclist_semi_pro(value: {id:1, firstname:\"Herman\"},ifExists: true ) { \n    value {\n      id\n      firstname\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{graphqlPostfix}}/graphql/participants",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{graphqlPostfix}}"
+							],
+							"path": [
+								"graphql",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete row using GQL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-cassandra-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {{table}} {\n  del: deletecyclist_semi_pro(value: {id: 4}, ifExists: true ) {\n    value {\n      id\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{host}}{{graphqlPostfix}}/graphql/participants",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{host}}{{graphqlPostfix}}"
+							],
+							"path": [
+								"graphql",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "region",
+			"value": ""
+		},
+		{
+			"key": "db",
+			"value": ""
+		},
+		{
+			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "password",
+			"value": ""
+		},
+		{
+			"key": "keyspace",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
