@@ -1,8 +1,8 @@
 # DataStax Workshop
 This workshop will show the modern developer APIs for Cassandra using Stargate:
-- REST;
-- GraphQL;
-- Document DB/
+- REST,
+- GraphQL,
+- Document DB.
 
 Additionally, we'll go into SAI indexes: Indexing in Cassandra on Relational Scale!
 
@@ -72,8 +72,9 @@ Now we'll create a table into our `workshop` keyspace.
   ],
   "ifNotExists": true
 }
-6. Click "Execute"
 ```
+6. Click "Execute"
+
 We just created our first table. You can check it out by clicking the "CQL Console" tab.
 ### Load some data
 Now we'll some data into our newly created table.
