@@ -1,10 +1,10 @@
 # ✨ DataStax Stargate + SAI Workshop ✨
 This workshop will show the modern developer APIs for Cassandra using Stargate's:
-* [REST API 💡](#rest) - developer friendly endpoints
-* [GraphQL API 🧩](#graphql) - modern GraphQL standard
-* [Document API 📚](#document) - use Cassandra like a Document Database
+* [REST API 💡](#rest) - Developer friendly endpoints
+* [GraphQL API 🧩](#graphql) - Modern GraphQL standard
+* [Document API 📚](#document) - Use Cassandra like a Document Database
 
-Additionally, we'll go into [SAI indexes 🚀](#sai): Indexing with Cassandra at Relational Scale!
+Additionally, we'll go into [SAI indexes 🚀](#sai) - Indexing with Cassandra at Relational Scale!
 
 ## ① Prerequisites
 Make sure to sign up for free on https://astra.datastax.com. And why not? You get $25 of credit every month! The $25 credit is good for approximately 30 million reads, 5 million writes, and 40GB of storage per month 🎉.
