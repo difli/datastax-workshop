@@ -1,8 +1,8 @@
 # ✨ DataStax Astra: Stargate + SAI Workshop ✨
 This workshop will show the modern developer APIs for Cassandra using Stargate's:
-** [REST API 💡](#rest) - Developer friendly endpoints
-** [GraphQL API 🧩](#graphql) - Modern GraphQL standard
-** [Document API 📚](#document) - Use Cassandra like a Document Database
+* [REST API 💡](#rest) - Developer friendly endpoints
+* [GraphQL API 🧩](#graphql) - Modern GraphQL standard
+* [Document API 📚](#document) - Use Cassandra like a Document Database
 
 The Stargate APIs are available by default on [Astra](https://astra.datastax.com) (the Serverless Managed Cloud Cassandra Database by DataStax), [Open Source Cassandra](https://cassandra.apache.org) and [DataStax Enterprise](https://www.datastax.com).
 
@@ -14,7 +14,7 @@ Make sure to sign up for free on https://astra.datastax.com. And why not? You ge
 ### ✅ Create a database
 1. Browse to https://astra.datastax.com and sign in using your account.
 2. Click "Create Database"
-3. Enter `datastax` as Database Name and `workshop` as Keyspace Name.
+3. Enter `datastax` as `Database Name` and `workshop` as `Keyspace Name`.
 4. Choose any one of the cloud providers, areas and regions.
 
 ### ✅ Load some sample data
