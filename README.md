@@ -4,7 +4,9 @@ This workshop will show the modern developer APIs for Cassandra using Stargate's
 * [GraphQL API 🧩](#graphql) - Modern GraphQL standard
 * [Document API 📚](#document) - Use Cassandra like a Document Database
 
-Additionally, we'll go into [SAI indexes 🚀](#sai) - Indexing with Cassandra at Relational Scale!
+The Stargate APIs are available by default on [Astra](https://astra.datastax.com) (the Serverless Managed Cloud Cassandra Database by DataStax), [Open Source Cassandra](https://cassandra.apache.org) and [DataStax Enterprise](https://www.datastax.com).
+
+Additionally, we'll go into [SAI indexes 🚀](#sai) - Indexing with Cassandra at Relational Scale! This new type of indexing is available by default on [Astra](https://astra.datastax.com) and [DataStax Enterprise](https://www.datastax.com) > v8.6.3.
 
 ## ① Prerequisites
 Make sure to sign up for free on https://astra.datastax.com. And why not? You get $25 of credit every month! The $25 credit is good for approximately 30 million reads, 5 million writes, and 40GB of storage per month 🎉.
