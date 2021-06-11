@@ -1,4 +1,4 @@
-# ✨ DataStax Stargate + SAI Workshop ✨
+# ✨ DataStax Astra: Stargate + SAI Workshop ✨
 This workshop will show the modern developer APIs for Cassandra using Stargate's:
 * [REST API 💡](#rest) - Developer friendly endpoints
 * [GraphQL API 🧩](#graphql) - Modern GraphQL standard
@@ -132,33 +132,37 @@ We'll first query for keyspaces in the database.
 
 You just ran your first GraphQL query and retrieved all keyspaces without using any CQL!
 ### ✅ Create a table
-Now we'll create two new tables into our `workshop` keyspace. We'll create a `house` table and a table called `residents` to store the persons who live there. In order to do this we'll utilize the `mutations createTable` structure.
+Now we'll create two new tables into our `workshop` keyspace. We'll create a `books` table and a table called `authors`. In order to do this we'll utilize the `mutations createTable` structure.
 1. Paste the following in the payload window on the left:
 ```graphql
 mutation createTables {
+  
+  table1: createTable(
+    keyspaceName: "workshop"
+    tableName: "books"
+    partitionKeys: [
+      # The keys required to access your data
+      { name: "name", type: { basic: TEXT } }
+    ]
+    clusteringKeys: [
+      # Secondary key used to access values within the partition
+      { name: "author", type: { basic: TEXT } }
+    ]
+  )
 
-  team: createTable(
-    keyspaceName: "workshop",
-    tableName: "team",
-    partitionKeys: [ # The keys required to access your data
-      { name: "name", type: {basic: TEXT} }
+  table2: createTable(
+    keyspaceName: "workshop"
+    tableName: "authors"
+    partitionKeys: [
+      # The keys required to access your data
+      { name: "name", type: { basic: TEXT } }
     ]
     values: [
-      { name: "country", type: {basic: TEXT} }
+      # Additional fields
+      { name: "country", type: { basic: INT } }
     ]
   )
 
-  race: createTable(
-    keyspaceName:"workshop",
-    tableName: "race",
-    partitionKeys: [
-      { name: "name", type: {basic: TEXT} }
-    ]
-    clusteringKeys: [ # Secondary key used to access values within the partition
-      { name: "year", type: {basic: INT}, order: "DESC" },
-      { name: "raceteam", type: {basic: TEXT} }
-    ]
-  )
 }
 ```
 2. Click the Play (▶️) button and observe the response.
@@ -167,53 +171,57 @@ You just created two tables using GraphQL!
 ### ✅ Load some data
 Before starting the next steps:
 * First switch to the "graphql" tab, click on "HTTP Headers" on the bottom-left and replace `populate_me` with your previously generated `Application Token`.
-* Then make sure you type `workshop` after the slash `.../graphql/` in the URL.
+* Then make sure you type `workshop` after the slash `.../graphql/` in the URL (replacing `system`).
 
-Now we'll load data into the `race` and `team` tables.
+Now we'll load data into the `books` and `authors` tables.
 
 1. Paste the following in the payload window on the left:
 ```graphql
-mutation insertRaceAndTeams {
-
-  update1: insertteam(value: {name: "Max Verstappen", country: "Netherlands"}) {
+mutation insertData {
+  
+  update1: insertbooks(
+    value: {
+      name: "Harry Potter and the Sorcerer's Stone"
+      author: "J.K. Rowling"
+    }
+  ) {
     value {
       name
     }
   }
 
-  update2: insertrace(value: {name: "GP", year: 2021, raceteam: "Max Verstappen"}) {
+  update2: insertbooks(
+    value: {
+      name: "Harry Potter and the Chamber of Secrets"
+      author: "J.K. Rowling"
+    }
+  ) {
     value {
       name
     }
   }
 
-  update3: insertteam(value: {name: "Lewis Hamilton", country: "UK"}) {
+  update3: insertauthors(value: { name: "J.K. Rowling", country: "UK" }) {
     value {
       name
     }
   }
 
-  update4: insertrace(value: {name: "GP", year: 2021, raceteam: "Lewis Hamilton"}) {
-    value {
-      name
-    }
-  }
 }
 ```
 2. Click the Play (▶️) button and observe the response.
 
-Notice the use of `insertteam`. This notation is used to `insert` data into the `team` table.
+Notice the use of `insertbooks`. This notation is used to `insert` data into the `books` table.
 ### ✅ Query some data
 Let's do some fancy querying now.
 1. Paste the following in the payload window on the left:
 ```graphql
-query allRaces {
+query allBooks {
 
-  race {
+  books {
     values {
       name
-      year
-      raceteam
+      author
     }
   }
 
@@ -224,35 +232,134 @@ query allRaces {
 Now let's filter this data:
 1. Paste the following in the payload window on the left:
 ```graphql
-query someRace {
-  race(
-    filter: {
-      name: { eq: "GP" }
-      year: { eq: 2021 }
-      raceteam: { eq: "Max Verstappen" }
+query someBook {
+  
+  books(
+    filter: { 
+      name: { 
+        eq: "Harry Potter and the Sorcerer's Stone" } 
     }
   ) {
     values {
       name
-      year
-      raceteam
+      author
     }
   }
+  
 }
 ```
 2. Click the Play (▶️) button and observe the response.
 ### ✅ Drop the tables
 Now let's drop the tables we just created.
+
+Before we do that, first switch back the "graphql-schema" tab.
+
 1. Paste the following in the payload window on the left:
 ```graphql
 mutation dropAll {
-  dropTeam: dropTable(keyspaceName: "workshop", tableName: "team")
-  dropRace: dropTable(keyspaceName: "workshop", tableName: "race")
+
+  dropTable1: dropTable(keyspaceName: "workshop", tableName: "books")
+  dropTable2: dropTable(keyspaceName: "workshop", tableName: "authors")
+
 }
 ```
 2. Click the Play (▶️) button twice while selecting each table and observe the response.
 
 ## <a name="document"></a> ④ Document API 📚
+Now let's make Cassandra the best of both worlds with not just wide-row modelling but also document modelling!
+
+Here we'll interact with the Document API for Astra (based on [Stargate.io](https://stargate.io)) through the built-in Swagger UI in Astra.
+1. Browse to https://astra.datastax.com and sign in using your account.
+2. Click the "Connect" tab.
+3. Click on "Document API".
+4. Click on the "Swagger UI" link on the right, this will open a new browser tab.
+### ✅ Namespaces
+Namespaces in the document world are the equivalent of Keyspaces in the wide-row world.
+
+We'll first use the namespaces endpoint to understand more about the namespaces in the database.
+1. Click "GET /v2/schemas/namespaces".
+2. Click "Try it out".
+3. Paste the `Application Token` you just generated into `X-Cassandra-Token`.
+4. Click "Execute"
+
+You'll see all Keyspaces in the database, however in the Document Realm they are calles Namespaces.
+### ✅ Collections
+Let's create a collection where our documents will reside.
+1. Click "POST /v2/namespaces/{namespace-id}/collections".
+2. Click "Try it out".
+3. Paste the `Application Token` you just generated into `X-Cassandra-Token`.
+4. Type `workshop` in the `namespace-id` field.
+5. Paste the following payload to create a new table:
+```json
+{
+    "name": "cars"
+}
+```
+6. Click "Execute"
+
+You just created a new collection. Actually a collection is the equivalent of a table in the wide-row world.
+### ✅ Store a document
+Let's create a collection where our documents will reside.
+1. Click "POST /v2/namespaces/{namespace-id}/collections/{collection-id}".
+2. Click "Try it out".
+3. Paste the `Application Token` you just generated into `X-Cassandra-Token`.
+4. Type `workshop` in the `namespace-id` field.
+5. Type `cars` in the `collection-id` field.
+6. Paste the following payload to create a document:
+```json
+{
+    "brand": "BMW",
+    "model": "535d xDrive",
+    "year": 2013,
+    "engine": {
+        "type": "diesel",
+        "cylinders": 6,
+        "turbo": 2
+    }
+}
+```
+6. Click "Execute"
+
+You just created a new document! Note that you didn't have to define a model at all. Also note that you can use hierarchy in the document.
+
+Let's add another document, just replace the payload with the following and press execute:
+```json
+{
+    "brand": "BMW",
+    "model": "X5 xDrive40e",
+    "year": 2015,
+    "engine": [
+        {
+            "type": "petrol",
+            "cylinders": 4,
+            "turbo": 1,
+            "compressor": 1
+        },
+        {
+            "type": "electric"
+        }
+    ]
+}
+```
+And again, we just schemalessly ingested a new document with different structure. Note that the response shows the document ID under which the document is saved.
+### ✅ Query a collection
+Now let's query the data without the need for creating indexes!
+1. Click "GET /v2​/namespaces​/{namespace-id}​/collections​/{collection-id}".
+2. Click "Try it out".
+3. Paste the `Application Token` you just generated into `X-Cassandra-Token`.
+4. Type `workshop` in the `namespace-id` field.
+5. Type `cars` in the `collection-id` field.
+6. Type `{ "brand": {"$eq": "BMW"}}` in the `where` field.
+7. Type `20` in the `page-size` field.
+8. Click "Execute"
+
+You just retrieved all data for BMW cars. Notice the different document models you get back!
+
+Now let's filter a bit better:
+1. Change the `where` field to show `{ "brand": {"$eq": "BMW"}, "year": {"$gte": 2015}}`
+2. Click "Execute"
+
+You just filtered out to just one car!
 
 ## <a name="sai"></a> ⑤ SAI Indexes 🚀
 Here we'll use the sample data you ingested during the prequisites steps.
