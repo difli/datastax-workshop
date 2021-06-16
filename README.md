@@ -18,7 +18,7 @@ Make sure to sign up for free on https://astra.datastax.com. And why not? You ge
 4. Choose any one of the cloud providers, areas and regions.
 
 ### ✅ Load some sample data
-Once the database comes out of **Pending** and is **Active** proceed to loading some sample data:
+Once the database comes out of the **Pending** state and becomes **Active**, proceed to loading some sample data:
 1. Click the database you just created (`datastax`).
 2. Click **Load Data**.
 3. Click `Movies and TV Shows` and click **Next**.
@@ -71,8 +71,7 @@ Now we'll create a table into our `workshop` keyspace.
       "name": "emailaddress",
       "typeDefinition": "text"
     }
-  ],
-  "ifNotExists": true
+  ]
 }
 ```
 6. Click **Execute**
@@ -203,7 +202,12 @@ mutation insertData {
     }
   }
 
-  update3: insertauthors(value: { name: "J.K. Rowling", country: "UK" }) {
+  update3: insertauthors(
+    value: {
+      name: "J.K. Rowling",
+      country: "UK"
+    }
+  ) {
     value {
       name
     }
