@@ -160,7 +160,7 @@ mutation createTables {
     ]
     values: [
       # Additional fields
-      { name: "country", type: { basic: INT } }
+      { name: "country", type: { basic: TEXT } }
     ]
   )
 
