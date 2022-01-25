@@ -4,6 +4,9 @@ This workshop will show the modern developer APIs for Cassandra using Stargate's
 * [GraphQL API 🧩](#graphql) - Modern GraphQL standard
 * [Document API 📚](#document) - Use Cassandra like a Document Database
 
+And in addition, we'll also use CQLsh to connect to the database:
+* [CQLsh 🐚](#cqlsh) - CQL Shell
+
 The Stargate APIs are available by default on [Astra](https://astra.datastax.com) (the Serverless Managed Cloud Cassandra Database by DataStax), [Open Source Cassandra](https://cassandra.apache.org) and [DataStax Enterprise](https://www.datastax.com).
 
 Additionally, we'll go into [SAI indexes 🚀](#sai) - Indexing with Cassandra at Relational Scale! This new type of indexing is available by default on [Astra](https://astra.datastax.com) and [DataStax Enterprise](https://www.datastax.com) > v8.6.3.
@@ -367,7 +370,27 @@ Now let's filter a bit better:
 
 You just filtered out to just one car!
 
-## <a name="sai"></a> ⑤ SAI Indexes 🚀
+## <a name="cqlsh"></a> ⑤ CQL Shell 🐚
+Apart from all these cool modern endpoints, there will always be a use-case for the plain old CQL Shell as well. There are two options for a CQLsh connection to Astra:
+1. Using the CQL Console on the Astra Dashboard (see below at ⑥)
+2. Using the CQLsh binary provides by DataStax
+
+Let's explore the second option.
+
+✅ Download CQLsh
+Browse to https://downloads.datastax.com/#cqlsh, select the Astra version, download and unpack.
+
+✅ Connect to the database
+In order to connect to the database make sure you generated a token as described in Prerequisites step and supply:
+- The Client ID
+- The Client Secret
+- The Secure Connect Bundle for the mutually encrypted TLS connection
+
+```sh
+cqlsh -u <client_id> -p <client_secret> -b <path-to-scb>
+```
+
+## <a name="sai"></a> ⑥ SAI Indexes 🚀
 Here we'll use the sample data you ingested during the prequisites steps.
 
 In this lab you'll see how easy it is to leverage scalable indexes to allow "relational-type" indexing and searching in Cassandra without using a primary key. This allows you to prevent data duplication and denormalization you'd normally have to use to create new query entrances into your data!
